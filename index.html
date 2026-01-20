@@ -550,16 +550,76 @@
             return keys;
         }
 
+        function deepMerge(main, develop) {
+            // If develop is null/undefined, return main
+            if (!develop) return main;
+            // If main is null/undefined, return develop
+            if (!main) return develop;
+            
+            // If develop is not an object or is an array, return develop (develop takes precedence)
+            if (typeof develop !== 'object' || Array.isArray(develop)) {
+                return develop;
+            }
+            
+            // If main is not an object or is an array, return develop
+            if (typeof main !== 'object' || Array.isArray(main)) {
+                return develop;
+            }
+            
+            // Merge objects recursively
+            const merged = { ...main };
+            for (const key in develop) {
+                if (key in main && typeof main[key] === 'object' && typeof develop[key] === 'object' && 
+                    !Array.isArray(main[key]) && !Array.isArray(develop[key]) && 
+                    main[key] !== null && develop[key] !== null) {
+                    // Recursively merge nested objects
+                    merged[key] = deepMerge(main[key], develop[key]);
+                } else {
+                    // develop takes precedence for non-object values or when types don't match
+                    merged[key] = develop[key];
+                }
+            }
+            return merged;
+        }
+
         async function loadLanguages() {
             const languageFiles = ['en', 'de', 'es', 'fr', 'ja', 'ko', 'pt'];
+            const repoBase = 'https://raw.githubusercontent.com/hugsndnugs/event-sentinel-languages';
             
             try {
                 for (const lang of languageFiles) {
-                    const response = await fetch(`${lang}.json`);
-                    if (response.ok) {
-                        languages[lang] = await response.json();
+                    let mainData = null;
+                    let developData = null;
+                    
+                    // Fetch from main branch
+                    try {
+                        const mainResponse = await fetch(`${repoBase}/main/${lang}.json`);
+                        if (mainResponse.ok) {
+                            mainData = await mainResponse.json();
+                        } else {
+                            console.warn(`Failed to load ${lang}.json from main: ${mainResponse.status} ${mainResponse.statusText}`);
+                        }
+                    } catch (error) {
+                        console.warn(`Error loading ${lang}.json from main:`, error);
+                    }
+                    
+                    // Fetch from develop branch
+                    try {
+                        const developResponse = await fetch(`${repoBase}/develop/${lang}.json`);
+                        if (developResponse.ok) {
+                            developData = await developResponse.json();
+                        } else {
+                            console.warn(`Failed to load ${lang}.json from develop: ${developResponse.status} ${developResponse.statusText}`);
+                        }
+                    } catch (error) {
+                        console.warn(`Error loading ${lang}.json from develop:`, error);
+                    }
+                    
+                    // Merge data (develop takes precedence)
+                    if (mainData || developData) {
+                        languages[lang] = deepMerge(mainData, developData);
                     } else {
-                        console.warn(`Failed to load ${lang}.json: ${response.status} ${response.statusText}`);
+                        console.warn(`No data loaded for ${lang}.json from either branch`);
                     }
                 }
 
