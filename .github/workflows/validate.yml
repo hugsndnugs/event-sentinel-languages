@@ -1,0 +1,29 @@
+name: Validate Locale Files
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [main, master]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      
+      - name: Validate locale files structure
+        run: python3 validate_locales.py
+      
+      - name: Check placeholders
+        run: python3 check_placeholders.py
+      
+      - name: Check string lengths
+        run: python3 check_lengths.py
