@@ -550,6 +550,80 @@
             return keys;
         }
 
+        function getAllStrings(obj, prefix = '') {
+            const strings = [];
+            for (const key in obj) {
+                const fullKey = prefix ? `${prefix}.${key}` : key;
+                if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+                    strings.push(...getAllStrings(obj[key], fullKey));
+                } else if (typeof obj[key] === 'string') {
+                    strings.push([fullKey, obj[key]]);
+                }
+            }
+            return strings;
+        }
+
+        function normalizeForComparison(text) {
+            // Remove {placeholder} patterns for comparison
+            return text.replace(/\{[^}]+\}/g, '').trim();
+        }
+
+        function isEmojiOnly(text) {
+            // Remove emoji ranges and whitespace
+            const emojiPattern = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\s]/gu;
+            const cleaned = text.replace(emojiPattern, '');
+            return cleaned.length === 0 && text.trim().length > 0;
+        }
+
+        function isLikelyEnglishMatch(enValue, langValue) {
+            // Exact match (case-sensitive)
+            if (enValue === langValue) {
+                return { match: true, type: 'exact' };
+            }
+            
+            // Case-insensitive match
+            if (enValue.toLowerCase() === langValue.toLowerCase()) {
+                return { match: true, type: 'case-insensitive' };
+            }
+            
+            // Normalized comparison (ignoring placeholders)
+            const enNormalized = normalizeForComparison(enValue);
+            const langNormalized = normalizeForComparison(langValue);
+            
+            if (enNormalized && langNormalized) {
+                // Exact normalized match
+                if (enNormalized === langNormalized) {
+                    return { match: true, type: 'normalized-exact' };
+                }
+                // Case-insensitive normalized match
+                if (enNormalized.toLowerCase() === langNormalized.toLowerCase()) {
+                    return { match: true, type: 'normalized-case-insensitive' };
+                }
+            }
+            
+            return { match: false, type: null };
+        }
+
+        function shouldSkipKey(keyPath, value) {
+            // Skip very short strings (might be single words that are the same)
+            if (value.trim().length <= 1) {
+                return true;
+            }
+            
+            // Skip emoji-only strings (they're universal)
+            if (isEmojiOnly(value)) {
+                return true;
+            }
+            
+            // Skip strings that are purely technical (IDs, etc.)
+            // These often appear in technical fields like "user_id", "channel_id"
+            if (/^[A-Z_]+$/.test(value.trim())) {
+                return true;
+            }
+            
+            return false;
+        }
+
         function deepMerge(main, develop) {
             // If develop is null/undefined, return main
             if (!develop) return main;
@@ -644,16 +718,62 @@
         function calculateStats(langCode) {
             if (!languages[langCode]) return null;
             
-            const langKeys = getAllKeys(languages[langCode]);
-            const missing = enKeys.filter(key => !langKeys.includes(key));
-            const completeness = ((enKeys.length - missing.length) / enKeys.length) * 100;
+            // For English, return 100% as it's the reference
+            if (langCode === 'en') {
+                const enStrings = getAllStrings(languages.en);
+                return {
+                    total: enStrings.length,
+                    translated: enStrings.length,
+                    missing: 0,
+                    completeness: '100.0',
+                    missingKeys: [],
+                    untranslated: 0
+                };
+            }
+            
+            // Get all string values from English and target language
+            const enStrings = getAllStrings(languages.en);
+            const langStringsMap = new Map(getAllStrings(languages[langCode]));
+            
+            let total = 0;
+            let translated = 0;
+            let untranslated = 0;
+            const missingKeys = [];
+            
+            // Compare each English string with the translation
+            for (const [key, enValue] of enStrings) {
+                // Skip keys that should be excluded
+                if (shouldSkipKey(key, enValue)) {
+                    continue;
+                }
+                
+                total++;
+                
+                if (!langStringsMap.has(key)) {
+                    // Key is missing
+                    missingKeys.push(key);
+                } else {
+                    const langValue = langStringsMap.get(key);
+                    // Check if translation matches English
+                    const matchResult = isLikelyEnglishMatch(enValue, langValue);
+                    
+                    if (matchResult.match) {
+                        untranslated++;
+                    } else {
+                        translated++;
+                    }
+                }
+            }
+            
+            const completeness = total > 0 ? ((translated / total) * 100).toFixed(1) : '0.0';
 
             return {
-                total: enKeys.length,
-                translated: langKeys.length,
-                missing: missing.length,
-                completeness: completeness.toFixed(1),
-                missingKeys: missing
+                total: total,
+                translated: translated,
+                missing: missingKeys.length,
+                untranslated: untranslated,
+                completeness: completeness,
+                missingKeys: missingKeys
             };
         }
 
@@ -692,7 +812,7 @@
                         <h3>${languageNames[lang] || lang.toUpperCase()}</h3>
                         <div class="stat-value">${stats[lang].completeness}%</div>
                         <div class="stat-detail">
-                            ${stats[lang].translated} / ${stats[lang].total} keys translated
+                            ${stats[lang].translated} / ${stats[lang].total} strings translated
                         </div>
                         <div class="progress-bar">
                             <div class="progress-fill" style="width: ${stats[lang].completeness}%"></div>
