@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Sentinel Languages - Visualization Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --bg-tertiary: #e8e8e8;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --border-color: #dddddd;
+            --accent: #4a90e2;
+            --accent-hover: #357abd;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --bg-tertiary: #3a3a3a;
+            --text-primary: #e8e8e8;
+            --text-secondary: #b0b0b0;
+            --border-color: #404040;
+            --accent: #5ba3f5;
+            --accent-hover: #4a90e2;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        h1 {
+            color: var(--text-primary);
+            font-size: 2em;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-primary);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-bottom: -2px;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .stat-detail {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), #20c997);
+            transition: width 0.5s ease;
+        }
+
+        .chart-container {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--shadow);
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .comparison-controls {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .language-selector {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .language-selector label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .language-selector input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .comparison-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .language-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        .language-panel h3 {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .tree-view {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .tree-item {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+
+        .tree-key {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .tree-value {
+            color: var(--text-primary);
+            margin-left: 10px;
+        }
+
+        .tree-value.missing {
+            color: var(--danger);
+            font-style: italic;
+        }
+
+        .tree-value.different {
+            background: rgba(255, 193, 7, 0.2);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .search-controls {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .search-results {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .result-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .result-key {
+            font-weight: bold;
+            color: var(--accent);
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .result-value {
+            margin-top: 5px;
+            color: var(--text-primary);
+        }
+
+        .missing-keys-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .missing-keys-panel h3 {
+            margin-bottom: 15px;
+        }
+
+        .missing-keys-list {
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .missing-key-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            border-left: 4px solid var(--danger);
+        }
+
+        .export-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .export-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .comparison-view {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌐 Event Sentinel Languages Dashboard</h1>
+            <div class="header-controls">
+                <button class="theme-toggle" onclick="toggleTheme()">🌓 Toggle Theme</button>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('stats')">📊 Statistics</button>
+            <button class="tab" onclick="switchTab('comparison')">🔍 Comparison</button>
+            <button class="tab" onclick="switchTab('search')">🔎 Search</button>
+            <button class="tab" onclick="switchTab('missing')">⚠️ Missing Keys</button>
+        </div>
+
+        <div id="stats-tab" class="tab-content active">
+            <div class="loading" id="stats-loading">Loading language files...</div>
+            <div id="stats-content" style="display: none;">
+                <div class="stats-grid" id="stats-grid"></div>
+                <div class="chart-container">
+                    <canvas id="coverage-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div id="comparison-tab" class="tab-content">
+            <div class="loading" id="comparison-loading">Loading language files...</div>
+            <div id="comparison-content" style="display: none;">
+                <div class="comparison-controls">
+                    <h3>Select Languages to Compare</h3>
+                    <div class="language-selector" id="comparison-selector"></div>
+                    <button class="btn" onclick="updateComparison()" style="margin-top: 15px;">Compare Selected</button>
+                </div>
+                <div class="comparison-view" id="comparison-view"></div>
+            </div>
+        </div>
+
+        <div id="search-tab" class="tab-content">
+            <div class="loading" id="search-loading">Loading language files...</div>
+            <div id="search-content" style="display: none;">
+                <div class="search-controls">
+                    <input type="text" class="search-input" id="search-input" placeholder="Search by key path or translation text...">
+                    <div class="filter-group">
+                        <select class="filter-select" id="search-language">
+                            <option value="all">All Languages</option>
+                        </select>
+                        <select class="filter-select" id="search-category">
+                            <option value="all">All Categories</option>
+                            <option value="events">Events</option>
+                            <option value="commands">Commands</option>
+                            <option value="errors">Errors</option>
+                            <option value="fields">Fields</option>
+                            <option value="common">Common</option>
+                            <option value="footer">Footer</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="search-results" id="search-results"></div>
+            </div>
+        </div>
+
+        <div id="missing-tab" class="tab-content">
+            <div class="loading" id="missing-loading">Loading language files...</div>
+            <div id="missing-content" style="display: none;">
+                <div id="missing-keys-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let languages = {};
+        let enKeys = [];
+        let coverageChart = null;
+        let currentTheme = localStorage.getItem('theme') || 'light';
+
+        // Initialize theme
+        if (currentTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            localStorage.setItem('theme', currentTheme);
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+
+            // Load data for the tab if needed
+            if (tabName === 'comparison' && Object.keys(languages).length > 0) {
+                initializeComparison();
+            } else if (tabName === 'search' && Object.keys(languages).length > 0) {
+                initializeSearch();
+            } else if (tabName === 'missing' && Object.keys(languages).length > 0) {
+                showMissingKeys();
+            }
+        }
+
+        function getAllKeys(obj, prefix = '') {
+            const keys = [];
+            for (const key in obj) {
+                const fullKey = prefix ? `${prefix}.${key}` : key;
+                if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+                    keys.push(...getAllKeys(obj[key], fullKey));
+                } else {
+                    keys.push(fullKey);
+                }
+            }
+            return keys;
+        }
+
+        async function loadLanguages() {
+            const languageFiles = ['en', 'de', 'es', 'fr', 'ja', 'ko', 'pt'];
+            
+            try {
+                for (const lang of languageFiles) {
+                    const response = await fetch(`../${lang}.json`);
+                    if (response.ok) {
+                        languages[lang] = await response.json();
+                    }
+                }
+
+                // Get English keys as reference
+                if (languages.en) {
+                    enKeys = getAllKeys(languages.en);
+                }
+
+                // Initialize all tabs
+                showStatistics();
+                initializeComparison();
+                initializeSearch();
+                showMissingKeys();
+            } catch (error) {
+                console.error('Error loading languages:', error);
+                document.querySelectorAll('.loading').forEach(el => {
+                    el.textContent = 'Error loading language files. Make sure you are viewing this on GitHub Pages.';
+                });
+            }
+        }
+
+        function calculateStats(langCode) {
+            if (!languages[langCode]) return null;
+            
+            const langKeys = getAllKeys(languages[langCode]);
+            const missing = enKeys.filter(key => !langKeys.includes(key));
+            const completeness = ((enKeys.length - missing.length) / enKeys.length) * 100;
+
+            return {
+                total: enKeys.length,
+                translated: langKeys.length,
+                missing: missing.length,
+                completeness: completeness.toFixed(1),
+                missingKeys: missing
+            };
+        }
+
+        function showStatistics() {
+            const loading = document.getElementById('stats-loading');
+            const content = document.getElementById('stats-content');
+            const grid = document.getElementById('stats-grid');
+
+            if (Object.keys(languages).length === 0) {
+                loading.textContent = 'No language files loaded.';
+                return;
+            }
+
+            loading.style.display = 'none';
+            content.style.display = 'block';
+
+            grid.innerHTML = '';
+
+            const stats = {};
+            const languageNames = {
+                en: 'English',
+                de: 'German',
+                es: 'Spanish',
+                fr: 'French',
+                ja: 'Japanese',
+                ko: 'Korean',
+                pt: 'Portuguese'
+            };
+
+            for (const lang in languages) {
+                stats[lang] = calculateStats(lang);
+                if (stats[lang]) {
+                    const card = document.createElement('div');
+                    card.className = 'stat-card';
+                    card.innerHTML = `
+                        <h3>${languageNames[lang] || lang.toUpperCase()}</h3>
+                        <div class="stat-value">${stats[lang].completeness}%</div>
+                        <div class="stat-detail">
+                            ${stats[lang].translated} / ${stats[lang].total} keys translated
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${stats[lang].completeness}%"></div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                }
+            }
+
+            // Create chart
+            const ctx = document.getElementById('coverage-chart').getContext('2d');
+            if (coverageChart) {
+                coverageChart.destroy();
+            }
+
+            const labels = Object.keys(stats).map(lang => languageNames[lang] || lang.toUpperCase());
+            const data = Object.values(stats).map(s => parseFloat(s.completeness));
+
+            coverageChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Translation Completeness (%)',
+                        data: data,
+                        backgroundColor: data.map(v => v === 100 ? '#28a745' : v >= 90 ? '#ffc107' : '#dc3545'),
+                        borderColor: data.map(v => v === 100 ? '#1e7e34' : v >= 90 ? '#e0a800' : '#c82333'),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function initializeComparison() {
+            const loading = document.getElementById('comparison-loading');
+            const content = document.getElementById('comparison-content');
+            const selector = document.getElementById('comparison-selector');
+
+            if (Object.keys(languages).length === 0) {
+                loading.textContent = 'No language files loaded.';
+                return;
+            }
+
+            loading.style.display = 'none';
+            content.style.display = 'block';
+
+            selector.innerHTML = '';
+            const languageNames = {
+                en: 'English',
+                de: 'German',
+                es: 'Spanish',
+                fr: 'French',
+                ja: 'Japanese',
+                ko: 'Korean',
+                pt: 'Portuguese'
+            };
+
+            for (const lang in languages) {
+                const label = document.createElement('label');
+                label.innerHTML = `
+                    <input type="checkbox" value="${lang}" ${lang === 'en' ? 'checked' : ''}>
+                    ${languageNames[lang] || lang.toUpperCase()}
+                `;
+                selector.appendChild(label);
+            }
+        }
+
+        function updateComparison() {
+            const selected = Array.from(document.querySelectorAll('#comparison-selector input:checked'))
+                .map(cb => cb.value);
+            
+            if (selected.length === 0) {
+                alert('Please select at least one language to compare.');
+                return;
+            }
+
+            const view = document.getElementById('comparison-view');
+            view.innerHTML = '';
+
+            selected.forEach(lang => {
+                const panel = document.createElement('div');
+                panel.className = 'language-panel';
+                
+                const languageNames = {
+                    en: 'English',
+                    de: 'German',
+                    es: 'Spanish',
+                    fr: 'French',
+                    ja: 'Japanese',
+                    ko: 'Korean',
+                    pt: 'Portuguese'
+                };
+
+                panel.innerHTML = `<h3>${languageNames[lang] || lang.toUpperCase()}</h3>`;
+                
+                const tree = document.createElement('div');
+                tree.className = 'tree-view';
+                tree.innerHTML = buildTreeView(languages[lang], languages.en, '');
+                panel.appendChild(tree);
+                
+                view.appendChild(panel);
+            });
+        }
+
+        function buildTreeView(obj, refObj, prefix) {
+            let html = '';
+            for (const key in refObj) {
+                const fullKey = prefix ? `${prefix}.${key}` : key;
+                const hasValue = obj && obj[key] !== undefined;
+                const value = hasValue ? obj[key] : null;
+                const refValue = refObj[key];
+
+                if (typeof refValue === 'object' && refValue !== null && !Array.isArray(refValue)) {
+                    html += `<div class="tree-item">
+                        <span class="tree-key">${key}</span>
+                        ${buildTreeView(value || {}, refValue, fullKey)}
+                    </div>`;
+                } else {
+                    const valueClass = !hasValue ? 'missing' : (value !== refValue && prefix !== '') ? 'different' : '';
+                    html += `<div class="tree-item">
+                        <span class="tree-key">${key}:</span>
+                        <span class="tree-value ${valueClass}">${hasValue ? JSON.stringify(value) : '[MISSING]'}</span>
+                    </div>`;
+                }
+            }
+            return html;
+        }
+
+        function initializeSearch() {
+            const loading = document.getElementById('search-loading');
+            const content = document.getElementById('search-content');
+            const langSelect = document.getElementById('search-language');
+
+            if (Object.keys(languages).length === 0) {
+                loading.textContent = 'No language files loaded.';
+                return;
+            }
+
+            loading.style.display = 'none';
+            content.style.display = 'block';
+
+            langSelect.innerHTML = '<option value="all">All Languages</option>';
+            const languageNames = {
+                en: 'English',
+                de: 'German',
+                es: 'Spanish',
+                fr: 'French',
+                ja: 'Japanese',
+                ko: 'Korean',
+                pt: 'Portuguese'
+            };
+
+            for (const lang in languages) {
+                const option = document.createElement('option');
+                option.value = lang;
+                option.textContent = languageNames[lang] || lang.toUpperCase();
+                langSelect.appendChild(option);
+            }
+
+            document.getElementById('search-input').addEventListener('input', performSearch);
+            document.getElementById('search-language').addEventListener('change', performSearch);
+            document.getElementById('search-category').addEventListener('change', performSearch);
+        }
+
+        function performSearch() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const langFilter = document.getElementById('search-language').value;
+            const categoryFilter = document.getElementById('search-category').value;
+            const results = document.getElementById('search-results');
+
+            if (!query && langFilter === 'all' && categoryFilter === 'all') {
+                results.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 20px;">Enter a search term to find translations...</p>';
+                return;
+            }
+
+            const matches = [];
+
+            const searchLang = langFilter === 'all' ? Object.keys(languages) : [langFilter];
+            const languageNames = {
+                en: 'English',
+                de: 'German',
+                es: 'Spanish',
+                fr: 'French',
+                ja: 'Japanese',
+                ko: 'Korean',
+                pt: 'Portuguese'
+            };
+
+            searchLang.forEach(lang => {
+                const langData = languages[lang];
+                if (!langData) return;
+
+                function searchInObject(obj, prefix = '') {
+                    for (const key in obj) {
+                        const fullKey = prefix ? `${prefix}.${key}` : key;
+                        
+                        // Check category filter
+                        if (categoryFilter !== 'all') {
+                            if (!fullKey.startsWith(categoryFilter)) continue;
+                        }
+
+                        if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+                            searchInObject(obj[key], fullKey);
+                        } else {
+                            const value = String(obj[key]).toLowerCase();
+                            const keyMatch = fullKey.toLowerCase().includes(query);
+                            const valueMatch = value.includes(query);
+
+                            if (query === '' || keyMatch || valueMatch) {
+                                matches.push({
+                                    lang: lang,
+                                    key: fullKey,
+                                    value: obj[key]
+                                });
+                            }
+                        }
+                    }
+                }
+
+                searchInObject(langData);
+            });
+
+            if (matches.length === 0) {
+                results.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 20px;">No matches found.</p>';
+                return;
+            }
+
+            results.innerHTML = matches.map(match => `
+                <div class="result-item">
+                    <div class="result-key">[${languageNames[match.lang] || match.lang.toUpperCase()}] ${match.key}</div>
+                    <div class="result-value">${match.value}</div>
+                </div>
+            `).join('');
+        }
+
+        function showMissingKeys() {
+            const loading = document.getElementById('missing-loading');
+            const content = document.getElementById('missing-content');
+            const container = document.getElementById('missing-keys-container');
+
+            if (Object.keys(languages).length === 0) {
+                loading.textContent = 'No language files loaded.';
+                return;
+            }
+
+            loading.style.display = 'none';
+            content.style.display = 'block';
+
+            container.innerHTML = '';
+
+            const languageNames = {
+                en: 'English',
+                de: 'German',
+                es: 'Spanish',
+                fr: 'French',
+                ja: 'Japanese',
+                ko: 'Korean',
+                pt: 'Portuguese'
+            };
+
+            for (const lang in languages) {
+                if (lang === 'en') continue; // Skip English as it's the reference
+
+                const stats = calculateStats(lang);
+                if (stats && stats.missingKeys.length > 0) {
+                    const panel = document.createElement('div');
+                    panel.className = 'missing-keys-panel';
+                    panel.innerHTML = `
+                        <h3>${languageNames[lang] || lang.toUpperCase()} - ${stats.missingKeys.length} Missing Keys</h3>
+                        <div class="missing-keys-list">
+                            ${stats.missingKeys.map(key => `
+                                <div class="missing-key-item">${key}</div>
+                            `).join('')}
+                        </div>
+                        <button class="export-btn" onclick="exportMissingKeys('${lang}')">Export as JSON</button>
+                    `;
+                    container.appendChild(panel);
+                } else if (stats && stats.missingKeys.length === 0) {
+                    const panel = document.createElement('div');
+                    panel.className = 'missing-keys-panel';
+                    panel.innerHTML = `
+                        <h3>${languageNames[lang] || lang.toUpperCase()} - ✅ Complete</h3>
+                        <p style="color: var(--success);">All keys are translated!</p>
+                    `;
+                    container.appendChild(panel);
+                }
+            }
+        }
+
+        function exportMissingKeys(lang) {
+            const stats = calculateStats(lang);
+            if (!stats || stats.missingKeys.length === 0) return;
+
+            const data = {
+                language: lang,
+                missingKeys: stats.missingKeys,
+                totalKeys: stats.total,
+                translatedKeys: stats.translated,
+                missingCount: stats.missingKeys.length
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${lang}_missing_keys.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Load languages on page load
+        loadLanguages();
+    </script>
+</body>
+</html>

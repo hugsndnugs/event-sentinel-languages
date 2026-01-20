@@ -18,6 +18,19 @@ The following languages are currently supported:
 - 🇰🇷 **Korean (ko)** - 한국어
 - 🇵🇹 **Portuguese (pt)** - Português
 
+## Visualization Dashboard
+
+🌐 **[View the Interactive Language Dashboard](https://hugsndnugs.github.io/event-sentinel-languages/)**
+
+Explore all translations with our interactive GitHub Pages dashboard featuring:
+
+- **📊 Statistics Dashboard** - View translation completeness percentages, key counts, and visual progress indicators for each language
+- **🔍 Comparison Tool** - Compare translations side-by-side across multiple languages with a tree view of the nested JSON structure
+- **🔎 Search & Filter** - Search by key path or translation text, filter by language or category (events, commands, errors, etc.)
+- **⚠️ Missing Keys Report** - Identify missing translations per language and export reports as JSON
+
+The dashboard automatically loads all language files and provides real-time analysis of translation coverage.
+
 ## Quick Start for Translators
 
 If you're fluent in another language and want to help improve Event Sentinel's translations:
@@ -34,6 +47,8 @@ For detailed contribution instructions, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ```
 event-sentinel-languages/
+├── docs/
+│   └── index.html   # GitHub Pages visualization dashboard
 ├── en.json          # English (base language)
 ├── de.json          # German
 ├── es.json          # Spanish
