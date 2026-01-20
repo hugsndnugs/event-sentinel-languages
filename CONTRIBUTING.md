@@ -85,12 +85,49 @@ You can validate JSON using online tools or your text editor.
 
 ### 6. Commit Your Changes
 
-Write clear, descriptive commit messages:
+Write clear, descriptive commit messages. Good commit messages help maintainers understand your changes quickly.
 
-```bash
-git add es.json
-git commit -m "Translate Spanish: Improve moderation event messages"
+#### Commit Message Template for New Languages
+
+When adding a new language file, use this template:
+
 ```
+## Title
+Add {Language} translation file {LanguageCode}.json
+
+## Description
+Introduces a comprehensive {Language} localization file for all bot events, commands, errors, and common fields. This enables {Language} language support throughout the application.
+```
+
+**Example:**
+```bash
+git add it.json
+git commit -m "Add Italian translation file it.json
+
+Introduces a comprehensive Italian localization file for all bot events, commands, errors, and common fields. This enables Italian language support throughout the application."
+```
+
+#### Commit Message Guidelines
+
+For other types of changes, follow these patterns:
+
+- **Improving translations**: `"Translate {Language}: {Brief description}"`
+  - Example: `"Translate Spanish: Improve moderation event messages"`
+
+- **Fixing errors**: `"Fix {Language}: {Description of fix}"`
+  - Example: `"Fix German: Correct typo in member_banned title"`
+
+- **Adding missing keys**: `"Add {Language}: {Missing keys description}"`
+  - Example: `"Add French: Add missing modmail translations"`
+
+- **Updating translations**: `"Update {Language}: {What was updated}"`
+  - Example: `"Update Japanese: Update command descriptions for clarity"`
+
+**Best Practices:**
+- Keep the first line (title) under 72 characters
+- Use the imperative mood ("Add" not "Added" or "Adds")
+- Be specific about what changed
+- Include the language code or name in the message
 
 ### 7. Push to Your Fork
 
