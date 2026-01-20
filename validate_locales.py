@@ -57,8 +57,20 @@ def main():
     print(f"English file has {len(en_keys)} keys")
     print()
     
-    # Validate all language files
-    languages = ['es', 'fr', 'de', 'ja', 'ko', 'pt']
+    # Discover all language files dynamically
+    locale_dir = Path(".")
+    json_files = list(locale_dir.glob("*.json"))
+    languages = []
+    for json_file in json_files:
+        lang_code = json_file.stem  # Get filename without extension
+        if lang_code != "en":  # Exclude en.json as it's the reference
+            languages.append(lang_code)
+    
+    if not languages:
+        print("[WARN] No language files found (except en.json)")
+        return 0
+    
+    languages.sort()  # Sort for consistent output
     all_valid = True
     
     for lang in languages:

@@ -34,7 +34,20 @@ def check_placeholders():
         if placeholders:
             en_placeholders[key] = set(placeholders)
     
-    languages = ['es', 'fr', 'de', 'ja', 'ko', 'pt']
+    # Discover all language files dynamically
+    locale_dir = Path(".")
+    json_files = list(locale_dir.glob("*.json"))
+    languages = []
+    for json_file in json_files:
+        lang_code = json_file.stem  # Get filename without extension
+        if lang_code != "en":  # Exclude en.json as it's the reference
+            languages.append(lang_code)
+    
+    if not languages:
+        print("[WARN] No language files found (except en.json)")
+        return True
+    
+    languages.sort()  # Sort for consistent output
     all_ok = True
     
     for lang in languages:

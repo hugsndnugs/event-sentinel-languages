@@ -24,7 +24,19 @@ def get_all_strings(d, prefix=''):
 
 def check_lengths():
     """Check string lengths against Discord limits"""
-    languages = ['en', 'es', 'fr', 'de', 'ja', 'ko', 'pt']
+    # Discover all language files dynamically
+    locale_dir = Path(".")
+    json_files = list(locale_dir.glob("*.json"))
+    languages = []
+    for json_file in json_files:
+        lang_code = json_file.stem  # Get filename without extension
+        languages.append(lang_code)
+    
+    if not languages:
+        print("[WARN] No language files found")
+        return True
+    
+    languages.sort()  # Sort for consistent output
     issues = []
     
     for lang in languages:
