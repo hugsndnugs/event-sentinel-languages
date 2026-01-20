@@ -25,5 +25,8 @@ jobs:
       - name: Check placeholders
         run: python3 check_placeholders.py
       
+      - name: Check for untranslated English text
+        run: python3 check_english.py
+      
       - name: Check string lengths
         run: python3 check_lengths.py
