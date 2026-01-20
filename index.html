@@ -555,11 +555,7 @@
             
             try {
                 for (const lang of languageFiles) {
-                    // Try absolute path first (for GitHub Pages), then relative (for local testing)
-                    let response = await fetch(`/${lang}.json`);
-                    if (!response.ok) {
-                        response = await fetch(`../${lang}.json`);
-                    }
+                    const response = await fetch(`${lang}.json`);
                     if (response.ok) {
                         languages[lang] = await response.json();
                     } else {

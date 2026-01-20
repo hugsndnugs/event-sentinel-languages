@@ -47,8 +47,7 @@ For detailed contribution instructions, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ```
 event-sentinel-languages/
-├── docs/
-│   └── index.html   # GitHub Pages visualization dashboard
+├── index.html       # GitHub Pages visualization dashboard
 ├── en.json          # English (base language)
 ├── de.json          # German
 ├── es.json          # Spanish
