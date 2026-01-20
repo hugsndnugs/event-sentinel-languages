@@ -1,0 +1,545 @@
+{
+  "events": {
+    "moderation": {
+      "member_banned": {
+        "title": "🚫 Membre Banni",
+        "user": "Utilisateur",
+        "user_id": "ID Utilisateur",
+        "account_created": "Compte Créé",
+        "banned_by": "Banni Par",
+        "reason": "Raison"
+      },
+      "member_unbanned": {
+        "title": "✅ Membre Débanni",
+        "user": "Utilisateur",
+        "user_id": "ID Utilisateur",
+        "unbanned_by": "Débanni Par",
+        "reason": "Raison"
+      },
+      "member_kicked": {
+        "title": "👢 Membre Expulsé",
+        "user": "Utilisateur",
+        "user_id": "ID Utilisateur",
+        "kicked_by": "Expulsé Par",
+        "reason": "Raison"
+      },
+      "member_left": {
+        "title": "👋 Membre Parti",
+        "user": "Utilisateur",
+        "user_id": "ID Utilisateur",
+        "joined_server": "A Rejoint le Serveur"
+      },
+      "member_joined": {
+        "title": "🎉 Membre Rejoint",
+        "user": "Utilisateur",
+        "user_id": "ID Utilisateur",
+        "account_created": "Compte Créé",
+        "member_count": "Nombre de Membres"
+      },
+      "nickname_changed": {
+        "title": "✏️ Surnom Modifié",
+        "user": "Utilisateur",
+        "before": "Avant",
+        "after": "Après",
+        "changed_by": "Modifié Par"
+      },
+      "timeout_set": {
+        "title": "⏰ Temporisation Définie",
+        "user": "Utilisateur",
+        "user_id": "ID Utilisateur",
+        "duration": "Durée",
+        "timeout_by": "Temporisation Par",
+        "reason": "Raison"
+      },
+      "timeout_removed": {
+        "title": "✅ Temporisation Supprimée",
+        "user": "Utilisateur",
+        "user_id": "ID Utilisateur",
+        "removed_by": "Supprimé Par",
+        "reason": "Raison"
+      },
+      "roles_updated": {
+        "title": "🎭 Rôles Mis à Jour",
+        "user": "Utilisateur",
+        "added": "➕ Ajoutés ({count})",
+        "removed": "➖ Supprimés ({count})",
+        "modified_by": "Modifié Par"
+      }
+    },
+    "voice": {
+      "channel_join": {
+        "title": "🎙️ Rejoint le Canal Vocal",
+        "user": "Utilisateur",
+        "channel": "Canal",
+        "channel_id": "ID du Canal"
+      },
+      "channel_leave": {
+        "title": "🎙️ Quitté le Canal Vocal",
+        "user": "Utilisateur",
+        "channel": "Canal",
+        "channel_id": "ID du Canal"
+      },
+      "channel_move": {
+        "title": "🎙️ Déplacé Entre Canaux Vocaux",
+        "user": "Utilisateur",
+        "from": "De",
+        "to": "Vers"
+      },
+      "server_muted": {
+        "title": "🔇 Rendu Muet par le Serveur",
+        "user": "Utilisateur",
+        "type": "Type",
+        "muted_by": "Rendu Muet Par",
+        "reason": "Raison"
+      },
+      "server_unmuted": {
+        "title": "🔊 Rendu Non Muet par le Serveur",
+        "user": "Utilisateur",
+        "type": "Type",
+        "unmuted_by": "Rendu Non Muet Par",
+        "reason": "Raison"
+      },
+      "self_muted": {
+        "title": "🔇 Auto Rendu Muet",
+        "user": "Utilisateur"
+      },
+      "self_unmuted": {
+        "title": "🔊 Auto Rendu Non Muet",
+        "user": "Utilisateur"
+      },
+      "server_deafened": {
+        "title": "🔇 Rendu Sourd par le Serveur",
+        "user": "Utilisateur",
+        "type": "Type",
+        "deafened_by": "Rendu Sourd Par",
+        "reason": "Raison"
+      },
+      "server_undeafened": {
+        "title": "🔊 Rendu Non Sourd par le Serveur",
+        "user": "Utilisateur",
+        "type": "Type",
+        "undeafened_by": "Rendu Non Sourd Par",
+        "reason": "Raison"
+      },
+      "self_deafened": {
+        "title": "🔇 Auto Rendu Sourd",
+        "user": "Utilisateur"
+      },
+      "self_undeafened": {
+        "title": "🔊 Auto Rendu Non Sourd",
+        "user": "Utilisateur"
+      }
+    },
+    "message": {
+      "message_deleted": {
+        "title": "🗑️ Message Supprimé",
+        "author": "Auteur",
+        "channel": "Canal",
+        "message_id": "ID du Message",
+        "content": "Contenu",
+        "attachments": "Pièces Jointes",
+        "deleted_by": "Supprimé Par",
+        "reason": "Raison",
+        "no_text_content": "*[Aucun contenu texte]*"
+      },
+      "message_edited": {
+        "title": "✏️ Message Modifié",
+        "author": "Auteur",
+        "channel": "Canal",
+        "message_id": "ID du Message",
+        "before": "Avant",
+        "after": "Après",
+        "jump_to_message": "Aller au Message",
+        "no_text_content": "*[Aucun contenu texte]*"
+      }
+    },
+    "channel": {
+      "channel_created": {
+        "title": "📁 Canal Créé",
+        "channel": "Canal",
+        "channel_id": "ID du Canal",
+        "type": "Type",
+        "category": "Catégorie",
+        "created_by": "Créé Par"
+      },
+      "channel_deleted": {
+        "title": "🗑️ Canal Supprimé",
+        "channel_name": "Nom du Canal",
+        "channel_id": "ID du Canal",
+        "type": "Type",
+        "category": "Catégorie",
+        "deleted_by": "Supprimé Par"
+      },
+      "channel_updated": {
+        "title": "✏️ Canal Mis à Jour",
+        "channel": "Canal",
+        "channel_id": "ID du Canal",
+        "changes": "Modifications",
+        "updated_by": "Mis à Jour Par"
+      },
+      "thread_created": {
+        "title": "🧵 Fil Créé",
+        "thread": "Fil",
+        "thread_id": "ID du Fil",
+        "parent_channel": "Canal Parent",
+        "created_by": "Créé Par"
+      },
+      "thread_deleted": {
+        "title": "🗑️ Fil Supprimé",
+        "thread_name": "Nom du Fil",
+        "thread_id": "ID du Fil",
+        "parent_channel": "Canal Parent",
+        "deleted_by": "Supprimé Par"
+      },
+      "thread_updated": {
+        "title": "✏️ Fil Mis à Jour",
+        "thread": "Fil",
+        "thread_id": "ID du Fil",
+        "changes": "Modifications",
+        "updated_by": "Mis à Jour Par"
+      }
+    },
+    "role": {
+      "role_created": {
+        "title": "🎨 Rôle Créé",
+        "role": "Rôle",
+        "role_id": "ID du Rôle",
+        "color": "Couleur",
+        "mentionable": "Mentionnable",
+        "hoisted": "Séparé",
+        "position": "Position",
+        "created_by": "Créé Par"
+      },
+      "role_deleted": {
+        "title": "🗑️ Rôle Supprimé",
+        "role_name": "Nom du Rôle",
+        "role_id": "ID du Rôle",
+        "color": "Couleur",
+        "deleted_by": "Supprimé Par"
+      },
+      "role_updated": {
+        "title": "✏️ Rôle Mis à Jour",
+        "role": "Rôle",
+        "role_id": "ID du Rôle",
+        "changes": "Modifications",
+        "updated_by": "Mis à Jour Par"
+      },
+      "roles_reordered": {
+        "title": "🎨 Rôles Réordonnés",
+        "changes": "Modifications",
+        "reordered_by": "Réordonné Par"
+      }
+    },
+    "server": {
+      "server_updated": {
+        "title": "⚙️ Serveur Mis à Jour",
+        "changes": "Modifications"
+      },
+      "invite_created": {
+        "title": "🔗 Invitation Créée",
+        "code": "Code",
+        "channel": "Canal",
+        "created_by": "Créé Par",
+        "reason": "Raison",
+        "max_uses": "Utilisations Max",
+        "unlimited": "Illimité",
+        "expires_in": "Expire Dans",
+        "never": "Jamais"
+      },
+      "invite_deleted": {
+        "title": "🗑️ Invitation Supprimée",
+        "code": "Code",
+        "channel": "Canal",
+        "deleted_by": "Supprimé Par",
+        "reason": "Raison"
+      }
+    },
+    "modmail": {
+      "new_thread": {
+        "title": "📬 Nouveau Fil Modmail",
+        "description": "Fil modmail pour {user} ({name})",
+        "user": "Utilisateur",
+        "user_id": "ID Utilisateur",
+        "account_created": "Compte Créé"
+      },
+      "select_server": {
+        "title": "📬 Select Server for Modmail",
+        "description": "Please select which server you'd like to contact:"
+      },
+      "connected": {
+        "title": "📬 Modmail Connected",
+        "description": "Your message has been forwarded to the staff team in **{guild_name}**. They will respond here when available.",
+        "how_it_works": "How it works",
+        "how_it_works_value": "• Send a message here to contact staff\n• Staff will reply in the modmail thread\n• Your messages are anonymous to other members"
+      },
+      "message_from_user": {
+        "title": "📥 Message from User"
+      },
+      "message_from_staff": {
+        "title": "📨 Message from Staff",
+        "footer": "Reply to this DM to continue the conversation"
+      },
+      "thread_closed": {
+        "title": "📬 Modmail Thread Closed",
+        "description": "Your modmail thread in **{guild_name}** has been closed.",
+        "footer": "You can start a new modmail thread by sending a DM to this bot."
+      },
+      "already_closed": "✅ This modmail thread is already closed.",
+      "failed_to_create": "❌ Failed to create modmail thread. Please contact an administrator in {guild_name}.",
+      "cannot_send_dm": "❌ Cannot send DM to user. They may have DMs disabled.",
+      "failed_to_send": "❌ Failed to send your message. Please try again later.",
+      "not_available": "❌ Modmail is not available. No servers have modmail enabled.",
+      "no_selection": "❌ No selection made.",
+      "guild_not_found": "❌ Selected guild not found.",
+      "selection_not_for_you": "❌ This selection menu is not for you!"
+    }
+  },
+  "commands": {
+    "help": {
+      "title": "📚 Event Sentinel - Aide des Commandes",
+      "description": "Toutes les commandes disponibles organisées par catégorie",
+      "config_commands": "⚙️ Commandes de Configuration",
+      "toggle_commands": "🔧 Commandes de Basculement d'Événements",
+      "info_commands": "ℹ️ Commandes d'Information",
+      "utility_commands": "🛠️ Commandes Utilitaires",
+      "footer": "Event Sentinel Bot"
+    },
+    "config": {
+      "title": "⚙️ Configuration du Serveur",
+      "description": "Configuration pour **{guild_name}**",
+      "log_channel": "📝 Canal de Journal",
+      "not_configured": "❌ Non configuré",
+      "configured": "✅ {channel}",
+      "missing_permissions": "⚠️ {channel} (Permissions manquantes)",
+      "bot_not_in_server": "⚠️ {channel} (Bot pas dans le serveur)",
+      "channel_not_found": "❌ Canal non trouvé (ID: {channel_id})",
+      "warning": "⚠️ Avertissement",
+      "cannot_send_messages": "Le bot ne peut pas envoyer de messages ou d'intégrations dans ce canal !",
+      "channel_no_longer_exists": "Le canal de journal configuré n'existe plus !",
+      "embed_colors": "🎨 Couleurs d'Intégration",
+      "using_defaults": "Utilisation des valeurs par défaut",
+      "custom": "personnalisé",
+      "default": "par défaut",
+      "event_toggles": "🔧 Basculements d'Événements",
+      "no_overrides": "Aucune substitution",
+      "all_events_default": "Tous les événements utilisent les valeurs par défaut (activés)",
+      "and_more": "... et {count} de plus",
+      "footer": "Event Sentinel",
+      "language": "🌐 Langue",
+      "current_language": "Langue actuelle : **{language}**"
+    },
+    "testlog": {
+      "title": "🧪 Message de Journal de Test",
+      "description": "Ceci est un message de test pour vérifier que le journal fonctionne correctement.",
+      "triggered_by": "Déclenché Par",
+      "server": "Serveur",
+      "channel": "Canal",
+      "footer": "Event Sentinel - Message de Test",
+      "success": "✅ Test Réussi",
+      "success_description": "Intégration de test envoyée à {channel}",
+      "failed": "❌ Test Échoué",
+      "no_log_channel": "Aucun canal de journal configuré pour ce serveur.\nUtilisez `/setlogchannel` pour en configurer un.",
+      "bot_not_found": "Membre du bot introuvable dans ce serveur.",
+      "cannot_send_messages": "Le bot ne peut pas envoyer de messages dans {channel}.\nVeuillez accorder la permission 'Envoyer des Messages'.",
+      "cannot_send_embeds": "Le bot ne peut pas envoyer d'intégrations dans {channel}.\nVeuillez accorder la permission 'Intégrer des Liens'.",
+      "send_failed": "Échec de l'envoi de l'intégration de test. Vérifiez les permissions du bot et l'accessibilité du canal."
+    },
+    "checkperms": {
+      "title": "🔐 Vérification des Permissions du Bot",
+      "description": "État des permissions pour **{bot_name}** dans **{guild_name}**",
+      "present_permissions": "✅ Permissions Présentes",
+      "missing_permissions": "❌ Permissions Manquantes",
+      "log_channel": "📝 Canal de Journal",
+      "log_channel_permissions": "**Permissions du Canal de Journal ({channel}) :**",
+      "can_send": "✅ Peut envoyer des messages et des intégrations",
+      "cannot_send_messages": "❌ Ne peut pas envoyer de messages",
+      "cannot_send_embeds": "❌ Ne peut pas envoyer d'intégrations",
+      "log_channel_not_found": "⚠️ Canal de journal non trouvé",
+      "status_all_present": "✅ État",
+      "all_permissions_present": "Toutes les permissions requises sont présentes !",
+      "action_required": "⚠️ Action Requise",
+      "grant_missing_permissions": "Veuillez accorder les permissions manquantes au rôle du bot.",
+      "footer": "Event Sentinel"
+    },
+    "botinfo": {
+      "title": "🤖 Informations du Bot Event Sentinel",
+      "description": "État et statistiques du bot",
+      "uptime": "📊 Temps de Fonctionnement",
+      "latency": "⚡ Latence",
+      "discord_py_version": "📚 Version Discord.py",
+      "servers": "🌐 Serveurs",
+      "servers_value": "{total} au total\n{configured} configurés",
+      "total_members": "👥 Total de Membres",
+      "commands": "🔧 Commandes",
+      "commands_value": "{count} disponibles",
+      "invite_bot": "🔗 Inviter le Bot",
+      "footer": "Event Sentinel"
+    },
+    "ratelimitstatus": {
+      "title": "⚡ État de Limitation de Débit",
+      "description": "Statistiques actuelles de limitation de débit et informations de file d'attente",
+      "statistics": "📊 Statistiques",
+      "rate_limit_hits": "Limites de débit atteintes : `{hits}`",
+      "messages_queued": "Messages en file d'attente : `{queued}`",
+      "messages_sent": "Messages envoyés : `{sent}`",
+      "queue_overflows": "Débordements de file : `{overflows}`",
+      "active_queues": "📬 Files Actives ({channels} canaux)",
+      "channel_queue": "Canal `{channel_id}` : `{size}` en file",
+      "no_active_queues": "Aucune file active",
+      "and_more_channels": "... et {count} canaux de plus",
+      "footer": "Event Sentinel"
+    },
+    "setlanguage": {
+      "success": "✅ Langue Mise à Jour",
+      "success_description": "La langue du serveur a été définie sur **{language}**",
+      "error": "❌ Erreur",
+      "error_description": "Échec de la mise à jour de la langue. Veuillez réessayer.",
+      "not_in_server": "❌ Cette commande ne peut être utilisée que dans un serveur !",
+      "footer": "Event Sentinel"
+    },
+    "setlogchannel": {
+      "success": "✅ Log Channel Updated",
+      "success_description": "Event logs for **{guild_name}** will now be sent to {channel}",
+      "error": "❌ Failed to set log channel",
+      "error_description": "Failed to set log channel: {error}",
+      "not_in_server": "❌ This command can only be used in a server!",
+      "bot_not_found": "❌ Bot not found in this server!",
+      "missing_permissions": "❌ Bot needs 'Send Messages' and 'Embed Links' permissions in this channel!"
+    },
+    "setcolor": {
+      "success": "✅ Color Updated",
+      "success_description": "Embed color for **{category}** events in **{guild_name}** has been set.",
+      "category": "Category",
+      "color": "Color",
+      "preview": "Preview",
+      "preview_text": "⬛ This embed shows the new color",
+      "error": "❌ Failed to set color",
+      "error_description": "Failed to set color: {error}",
+      "invalid_format": "❌ Invalid color format! Please provide a valid hex color (e.g., `E74C3C` or `0xE74C3C` or `#E74C3C`)",
+      "not_in_server": "❌ This command can only be used in a server!"
+    },
+    "toggle": {
+      "success": "✅ Event Toggle Updated",
+      "success_description": "`{category}.{event_key}` set to {status}.",
+      "enabled": "enabled",
+      "disabled": "disabled"
+    },
+    "listeventtoggles": {
+      "title": "Event Toggle Overrides",
+      "no_overrides": "No overrides set. All events are currently using defaults (enabled)."
+    },
+    "setmodmailchannel": {
+      "success": "✅ Modmail Channel Updated",
+      "success_description": "Modmail threads for **{guild_name}** will now be created in {channel}",
+      "error": "❌ Failed to set modmail channel",
+      "error_description": "Failed to set modmail channel: {error}",
+      "not_in_server": "❌ This command can only be used in a server!",
+      "bot_not_found": "❌ Bot not found in this server!",
+      "missing_permissions": "❌ Bot needs these permissions in this channel: {permissions}!"
+    },
+    "togglemail": {
+      "success": "✅ Modmail Updated",
+      "success_description": "Modmail for **{guild_name}** is now **{status}**",
+      "enabled": "enabled",
+      "disabled": "disabled",
+      "error": "❌ Failed to toggle modmail",
+      "error_description": "Failed to toggle modmail: {error}",
+      "not_in_server": "❌ This command can only be used in a server!"
+    },
+    "closemodmail": {
+      "success": "✅ Modmail Thread Closed",
+      "success_description": "This modmail thread has been closed and archived.",
+      "reason": "Reason",
+      "error": "❌ Error",
+      "error_description": "Failed to close modmail thread. This may not be a modmail thread.",
+      "not_in_server": "❌ This command can only be used in a server!",
+      "not_in_thread": "❌ This command can only be used in a modmail thread!",
+      "no_permission": "❌ You don't have permission to close modmail threads!",
+      "already_closed": "✅ This modmail thread is already closed."
+    },
+    "dashboard": {
+      "already_running": "⚠️ Dashboard Already Running",
+      "already_running_description": "The dashboard is already running on port {port}.",
+      "started": "✅ Dashboard Started",
+      "started_description": "The dashboard has been started on port {port}.\nAccess it at: http://localhost:{port}",
+      "disabled": "✅ Dashboard Disabled",
+      "disabled_description": "Dashboard routes have been disabled. The API server continues running for /health endpoint.",
+      "failed_to_start": "❌ Failed to Start Dashboard",
+      "failed_to_start_description": "The dashboard could not be started. It may already be running.",
+      "failed_to_disable": "❌ Failed to Disable Dashboard",
+      "failed_to_disable_description": "Dashboard routes could not be disabled. They may already be disabled.",
+      "unexpected_error": "❌ Unexpected Error",
+      "unexpected_error_description": "An unexpected error occurred while controlling the dashboard.",
+      "no_permission": "❌ You don't have permission to use this command.",
+      "wrong_server": "❌ This command can only be used in the support server.",
+      "footer": "Event Sentinel"
+    }
+  },
+  "errors": {
+    "not_in_server": "❌ Cette commande ne peut être utilisée que dans un serveur !",
+    "unknown": "❌ Une erreur inconnue s'est produite."
+  },
+  "fields": {
+    "user": "Utilisateur",
+    "user_id": "ID Utilisateur",
+    "channel": "Canal",
+    "channel_id": "ID du Canal",
+    "reason": "Raison",
+    "type": "Type",
+    "before": "Avant",
+    "after": "Après",
+    "changes": "Modifications",
+    "created_by": "Créé Par",
+    "deleted_by": "Supprimé Par",
+    "updated_by": "Mis à Jour Par",
+    "modified_by": "Modifié Par",
+    "account_created": "Compte Créé",
+    "member_count": "Nombre de Membres",
+    "joined_server": "A Rejoint le Serveur",
+    "duration": "Durée",
+    "max_uses": "Utilisations Max",
+    "expires_in": "Expire Dans",
+    "unlimited": "Illimité",
+    "never": "Jamais",
+    "code": "Code",
+    "category": "Catégorie",
+    "position": "Position",
+    "color": "Couleur",
+    "mentionable": "Mentionnable",
+    "hoisted": "Séparé",
+    "role": "Rôle",
+    "role_id": "ID du Rôle",
+    "role_name": "Nom du Rôle",
+    "thread": "Fil",
+    "thread_id": "ID du Fil",
+    "thread_name": "Nom du Fil",
+    "parent_channel": "Canal Parent",
+    "channel_name": "Nom du Canal",
+    "author": "Auteur",
+    "message_id": "ID du Message",
+    "content": "Contenu",
+    "attachments": "Pièces Jointes",
+    "jump_to_message": "Aller au Message",
+    "from": "De",
+    "to": "Vers"
+  },
+  "common": {
+    "yes": "Oui",
+    "no": "Non",
+    "enabled": "✅ Activé",
+    "disabled": "❌ Désactivé",
+    "unknown": "Inconnu",
+    "none": "Aucun",
+    "server_muted": "Rendu Muet par le Serveur",
+    "server_unmuted": "Rendu Non Muet par le Serveur",
+    "server_deafened": "Rendu Sourd par le Serveur",
+    "server_undeafened": "Rendu Non Sourd par le Serveur",
+    "self_muted": "Auto Rendu Muet",
+    "self_unmuted": "Auto Rendu Non Muet",
+    "self_deafened": "Auto Rendu Sourd",
+    "self_undeafened": "Auto Rendu Non Sourd"
+  },
+  "footer": {
+    "event_logged": "Événement enregistré par Event Sentinel"
+  }
+}
