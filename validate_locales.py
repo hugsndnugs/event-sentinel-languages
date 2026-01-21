@@ -61,9 +61,10 @@ def main():
     locale_dir = Path(".")
     json_files = list(locale_dir.glob("*.json"))
     languages = []
+    excluded_files = {"en", "translation_stats"}  # Exclude reference and generated files
     for json_file in json_files:
         lang_code = json_file.stem  # Get filename without extension
-        if lang_code != "en":  # Exclude en.json as it's the reference
+        if lang_code not in excluded_files:
             languages.append(lang_code)
     
     if not languages:
