@@ -146,16 +146,10 @@ git push origin translate/your-language-code
 
 ## Branch Strategy
 
-This project uses a two-branch strategy to manage translation quality and completeness:
+This project uses a two-branch strategy to manage translation completeness:
 
-### `develop` Branch
-
-The `develop` branch is used for:
-- **Partially translated languages**: Translations that are in progress but not yet complete
-- **Unverified translations**: Translations that haven't been reviewed or tested yet
-- **Work-in-progress contributions**: Any translation work that needs community review or verification
-
-When submitting a pull request for incomplete or unverified translations, target the `develop` branch. This allows contributors to share their progress and receive feedback before the translation is considered complete.
+- **`main` branch**: Contains **complete** language translations only. All translation keys from `en.json` must be fully translated and verified.
+- **`develop` branch**: Contains **incomplete** language translations. This includes work-in-progress translations, partially translated files, and translations that need review or verification.
 
 ### `main` Branch
 
@@ -165,6 +159,15 @@ The `main` branch is reserved for:
 - **Production-ready content**: Only translations ready for use in the Event Sentinel bot
 
 Only complete, verified translations should be merged to `main`. Maintainers will review and promote translations from `develop` to `main` once they meet the quality standards and are fully complete.
+
+### `develop` Branch
+
+The `develop` branch is used for:
+- **Partially translated languages**: Translations that are in progress but not yet complete
+- **Unverified translations**: Translations that haven't been reviewed or tested yet
+- **Work-in-progress contributions**: Any translation work that needs community review or verification
+
+When submitting a pull request for incomplete or unverified translations, target the `develop` branch. This allows contributors to share their progress and receive feedback before the translation is considered complete.
 
 ### How to Choose the Right Branch
 
