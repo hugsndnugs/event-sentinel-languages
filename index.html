@@ -506,6 +506,7 @@
     <script>
         let languages = {};
         let enKeys = [];
+        let translationStats = {}; // Pre-calculated stats from Python
         let coverageChart = null;
         let currentTheme = localStorage.getItem('theme') || 'light';
 
@@ -661,6 +662,19 @@
             const repoBase = 'https://raw.githubusercontent.com/hugsndnugs/event-sentinel-languages';
             
             try {
+                // Load translation statistics from Python-generated file
+                try {
+                    const statsResponse = await fetch(`${repoBase}/main/translation_stats.json`);
+                    if (statsResponse.ok) {
+                        translationStats = await statsResponse.json();
+                        console.log('Loaded translation statistics from Python');
+                    } else {
+                        console.warn('Failed to load translation_stats.json, will calculate client-side');
+                    }
+                } catch (error) {
+                    console.warn('Error loading translation_stats.json:', error);
+                }
+
                 for (const lang of languageFiles) {
                     let mainData = null;
                     let developData = null;
@@ -716,6 +730,12 @@
         }
 
         function calculateStats(langCode) {
+            // First, try to use pre-calculated stats from Python
+            if (translationStats && translationStats[langCode]) {
+                return translationStats[langCode];
+            }
+            
+            // Fallback to client-side calculation if stats not available
             if (!languages[langCode]) return null;
             
             // For English, return 100% as it's the reference
