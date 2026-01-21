@@ -678,17 +678,22 @@
                 for (const lang of languageFiles) {
                     let mainData = null;
                     let developData = null;
+                    const isCriticalFile = lang === 'en';
                     
                     // Fetch from main branch
                     try {
                         const mainResponse = await fetch(`${repoBase}/main/${lang}.json`);
                         if (mainResponse.ok) {
                             mainData = await mainResponse.json();
-                        } else {
+                        } else if (isCriticalFile || mainResponse.status !== 404) {
+                            // Only warn for critical files or non-404 errors
                             console.warn(`Failed to load ${lang}.json from main: ${mainResponse.status} ${mainResponse.statusText}`);
                         }
                     } catch (error) {
-                        console.warn(`Error loading ${lang}.json from main:`, error);
+                        // Always warn for critical files, or for non-404 related errors
+                        if (isCriticalFile || !error.message?.includes('404')) {
+                            console.warn(`Error loading ${lang}.json from main:`, error);
+                        }
                     }
                     
                     // Fetch from develop branch
@@ -696,17 +701,22 @@
                         const developResponse = await fetch(`${repoBase}/develop/${lang}.json`);
                         if (developResponse.ok) {
                             developData = await developResponse.json();
-                        } else {
+                        } else if (isCriticalFile || developResponse.status !== 404) {
+                            // Only warn for critical files or non-404 errors
                             console.warn(`Failed to load ${lang}.json from develop: ${developResponse.status} ${developResponse.statusText}`);
                         }
                     } catch (error) {
-                        console.warn(`Error loading ${lang}.json from develop:`, error);
+                        // Always warn for critical files, or for non-404 related errors
+                        if (isCriticalFile || !error.message?.includes('404')) {
+                            console.warn(`Error loading ${lang}.json from develop:`, error);
+                        }
                     }
                     
                     // Merge data (develop takes precedence)
                     if (mainData || developData) {
                         languages[lang] = deepMerge(mainData, developData);
-                    } else {
+                    } else if (isCriticalFile) {
+                        // Only warn if it's a critical file - optional files may not exist yet
                         console.warn(`No data loaded for ${lang}.json from either branch`);
                     }
                 }
