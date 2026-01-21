@@ -8,6 +8,35 @@ from check_english import (
     should_skip_key
 )
 
+def deep_merge(main, develop):
+    """Merge develop branch data into main, with develop taking precedence"""
+    # If develop is None/empty, return main
+    if not develop:
+        return main
+    # If main is None/empty, return develop
+    if not main:
+        return develop
+    
+    # If develop is not a dict or is a list, return develop (develop takes precedence)
+    if not isinstance(develop, dict) or isinstance(develop, list):
+        return develop
+    
+    # If main is not a dict or is a list, return develop
+    if not isinstance(main, dict) or isinstance(main, list):
+        return develop
+    
+    # Merge dictionaries recursively
+    merged = main.copy()
+    for key, develop_value in develop.items():
+        if key in merged and isinstance(merged[key], dict) and isinstance(develop_value, dict):
+            # Recursively merge nested objects
+            merged[key] = deep_merge(merged[key], develop_value)
+        else:
+            # develop takes precedence for non-object values or when types don't match
+            merged[key] = develop_value
+    
+    return merged
+
 def calculate_stats(lang_code, en_strings, lang_data):
     """Calculate translation statistics for a language"""
     if lang_code == 'en':
@@ -62,36 +91,56 @@ def calculate_stats(lang_code, en_strings, lang_data):
         'missingKeys': missing_keys
     }
 
+def load_language_file(branch, lang_code):
+    """Load a language file from a specific branch"""
+    try:
+        # Try to read from branch-specific path
+        # In workflow, we'll have both branches checked out
+        path = f"{branch}/{lang_code}.json" if Path(f"{branch}/{lang_code}.json").exists() else f"{lang_code}.json"
+        with open(path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return None
+    except json.JSONDecodeError as e:
+        print(f"[WARN] Failed to parse {lang_code}.json from {branch}: {e}")
+        return None
+
 def generate_stats():
-    """Generate translation statistics for all language files"""
-    # Load English as reference
-    with open("en.json", 'r', encoding='utf-8') as f:
-        en_data = json.load(f)
+    """Generate translation statistics for all language files, merging main and develop branches"""
+    # Load English as reference (from current branch, should be same in both)
+    en_data = None
+    for branch in ['main', 'develop', '.']:
+        en_data = load_language_file(branch, 'en')
+        if en_data:
+            break
+    
+    if not en_data:
+        print("[ERROR] Could not load en.json from any branch")
+        return {}
     
     en_strings = dict(get_all_strings(en_data))
     
-    # Discover all language files dynamically
-    locale_dir = Path(".")
-    json_files = list(locale_dir.glob("*.json"))
-    languages = []
-    for json_file in json_files:
-        lang_code = json_file.stem  # Get filename without extension
-        languages.append(lang_code)
-    
-    languages.sort()  # Sort for consistent output
+    # Get list of all language files to check
+    language_files = ['en', 'de', 'es', 'fr', 'ja', 'ko', 'pt']
     
     stats = {}
     
-    for lang_code in languages:
-        try:
-            with open(f"{lang_code}.json", 'r', encoding='utf-8') as f:
-                lang_data = json.load(f)
-            
+    for lang_code in language_files:
+        # Load from both branches
+        main_data = load_language_file('main', lang_code)
+        develop_data = load_language_file('develop', lang_code)
+        
+        # If neither exists, try current directory
+        if not main_data and not develop_data:
+            main_data = load_language_file('.', lang_code)
+        
+        # Merge data (develop takes precedence)
+        lang_data = deep_merge(main_data, develop_data) if main_data or develop_data else None
+        
+        if lang_data:
             stats[lang_code] = calculate_stats(lang_code, en_strings, lang_data)
-        except FileNotFoundError:
-            print(f"[WARN] {lang_code}.json not found, skipping...")
-        except json.JSONDecodeError as e:
-            print(f"[ERROR] Failed to parse {lang_code}.json: {e}")
+        else:
+            print(f"[WARN] {lang_code}.json not found in main or develop branches, skipping...")
     
     # Write stats to JSON file
     with open("translation_stats.json", 'w', encoding='utf-8') as f:

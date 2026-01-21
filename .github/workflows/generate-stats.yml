@@ -24,7 +24,23 @@ jobs:
       contents: write
     
     steps:
-      - name: Checkout repository
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Checkout develop branch
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+          path: develop
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Checkout current branch for output
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
