@@ -5,6 +5,7 @@
     "missing": 0,
     "untranslated": 0,
     "completeness": "100.0",
-    "missingKeys": []
+    "missingKeys": [],
+    "untranslatedKeys": []
   }
 }
