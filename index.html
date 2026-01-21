@@ -446,7 +446,7 @@
             <button class="tab active" onclick="switchTab('stats')">📊 Statistics</button>
             <button class="tab" onclick="switchTab('comparison')">🔍 Comparison</button>
             <button class="tab" onclick="switchTab('search')">🔎 Search</button>
-            <button class="tab" onclick="switchTab('missing')">⚠️ Missing Keys</button>
+            <button class="tab" onclick="switchTab('missing')">⚠️ Translation Status</button>
         </div>
 
         <div id="stats-tab" class="tab-content active">
@@ -732,7 +732,12 @@
         function calculateStats(langCode) {
             // First, try to use pre-calculated stats from Python
             if (translationStats && translationStats[langCode]) {
-                return translationStats[langCode];
+                const stats = translationStats[langCode];
+                // Ensure backward compatibility - add untranslatedKeys if missing
+                if (!stats.untranslatedKeys) {
+                    stats.untranslatedKeys = [];
+                }
+                return stats;
             }
             
             // Fallback to client-side calculation if stats not available
@@ -747,7 +752,8 @@
                     missing: 0,
                     completeness: '100.0',
                     missingKeys: [],
-                    untranslated: 0
+                    untranslated: 0,
+                    untranslatedKeys: []
                 };
             }
             
@@ -759,6 +765,7 @@
             let translated = 0;
             let untranslated = 0;
             const missingKeys = [];
+            const untranslatedKeys = [];
             
             // Compare each English string with the translation
             for (const [key, enValue] of enStrings) {
@@ -779,6 +786,7 @@
                     
                     if (matchResult.match) {
                         untranslated++;
+                        untranslatedKeys.push(key);
                     } else {
                         translated++;
                     }
@@ -793,7 +801,8 @@
                 missing: missingKeys.length,
                 untranslated: untranslated,
                 completeness: completeness,
-                missingKeys: missingKeys
+                missingKeys: missingKeys,
+                untranslatedKeys: untranslatedKeys
             };
         }
 
@@ -1117,20 +1126,13 @@
                 if (lang === 'en') continue; // Skip English as it's the reference
 
                 const stats = calculateStats(lang);
-                if (stats && stats.missingKeys.length > 0) {
-                    const panel = document.createElement('div');
-                    panel.className = 'missing-keys-panel';
-                    panel.innerHTML = `
-                        <h3>${languageNames[lang] || lang.toUpperCase()} - ${stats.missingKeys.length} Missing Keys</h3>
-                        <div class="missing-keys-list">
-                            ${stats.missingKeys.map(key => `
-                                <div class="missing-key-item">${key}</div>
-                            `).join('')}
-                        </div>
-                        <button class="export-btn" onclick="exportMissingKeys('${lang}')">Export as JSON</button>
-                    `;
-                    container.appendChild(panel);
-                } else if (stats && stats.missingKeys.length === 0) {
+                if (!stats) continue;
+
+                const hasMissing = stats.missingKeys && stats.missingKeys.length > 0;
+                const hasUntranslated = stats.untranslatedKeys && stats.untranslatedKeys.length > 0;
+                const isComplete = !hasMissing && !hasUntranslated;
+
+                if (isComplete) {
                     const panel = document.createElement('div');
                     panel.className = 'missing-keys-panel';
                     panel.innerHTML = `
@@ -1138,27 +1140,90 @@
                         <p style="color: var(--success);">All keys are translated!</p>
                     `;
                     container.appendChild(panel);
+                } else {
+                    const panel = document.createElement('div');
+                    panel.className = 'missing-keys-panel';
+                    
+                    let panelContent = `<h3>${languageNames[lang] || lang.toUpperCase()} - Translation Status</h3>`;
+                    
+                    // Missing Keys Section
+                    if (hasMissing) {
+                        panelContent += `
+                            <h4 style="color: var(--danger); margin-top: 15px; margin-bottom: 10px;">
+                                ⚠️ Missing Keys (${stats.missingKeys.length})
+                            </h4>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 10px;">
+                                These keys don't exist in the translation file:
+                            </p>
+                            <div class="missing-keys-list">
+                                ${stats.missingKeys.map(key => `
+                                    <div class="missing-key-item">${key}</div>
+                                `).join('')}
+                            </div>
+                        `;
+                    } else {
+                        panelContent += `
+                            <h4 style="color: var(--success); margin-top: 15px; margin-bottom: 10px;">
+                                ✅ No Missing Keys
+                            </h4>
+                        `;
+                    }
+                    
+                    // Untranslated Keys Section (English Stubs)
+                    if (hasUntranslated) {
+                        panelContent += `
+                            <h4 style="color: var(--warning); margin-top: 20px; margin-bottom: 10px;">
+                                📝 Untranslated Keys - English Stubs (${stats.untranslatedKeys.length})
+                            </h4>
+                            <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 10px;">
+                                These keys exist but still contain English text (not translated yet):
+                            </p>
+                            <div class="missing-keys-list">
+                                ${stats.untranslatedKeys.map(key => `
+                                    <div class="missing-key-item" style="border-left-color: var(--warning);">${key}</div>
+                                `).join('')}
+                            </div>
+                        `;
+                    } else {
+                        panelContent += `
+                            <h4 style="color: var(--success); margin-top: 20px; margin-bottom: 10px;">
+                                ✅ No Untranslated Keys
+                            </h4>
+                        `;
+                    }
+                    
+                    panelContent += `
+                        <button class="export-btn" onclick="exportMissingKeys('${lang}')" style="margin-top: 20px;">
+                            Export Status as JSON
+                        </button>
+                    `;
+                    
+                    panel.innerHTML = panelContent;
+                    container.appendChild(panel);
                 }
             }
         }
 
         function exportMissingKeys(lang) {
             const stats = calculateStats(lang);
-            if (!stats || stats.missingKeys.length === 0) return;
+            if (!stats || (stats.missingKeys.length === 0 && (!stats.untranslatedKeys || stats.untranslatedKeys.length === 0))) return;
 
             const data = {
                 language: lang,
-                missingKeys: stats.missingKeys,
+                missingKeys: stats.missingKeys || [],
+                untranslatedKeys: stats.untranslatedKeys || [],
                 totalKeys: stats.total,
                 translatedKeys: stats.translated,
-                missingCount: stats.missingKeys.length
+                missingCount: stats.missingKeys ? stats.missingKeys.length : 0,
+                untranslatedCount: stats.untranslatedKeys ? stats.untranslatedKeys.length : 0,
+                completeness: stats.completeness
             };
 
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `${lang}_missing_keys.json`;
+            a.download = `${lang}_translation_status.json`;
             a.click();
             URL.revokeObjectURL(url);
         }

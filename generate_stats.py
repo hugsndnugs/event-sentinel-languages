@@ -48,7 +48,8 @@ def calculate_stats(lang_code, en_strings, lang_data):
             'missing': 0,
             'untranslated': 0,
             'completeness': '100.0',
-            'missingKeys': []
+            'missingKeys': [],
+            'untranslatedKeys': []
         }
     
     # Get all string values from target language
@@ -58,6 +59,7 @@ def calculate_stats(lang_code, en_strings, lang_data):
     translated = 0
     untranslated = 0
     missing_keys = []
+    untranslated_keys = []
     
     # Compare each English string with the translation
     for key, en_value in en_strings.items():
@@ -77,6 +79,7 @@ def calculate_stats(lang_code, en_strings, lang_data):
             
             if is_match:
                 untranslated += 1
+                untranslated_keys.append(key)
             else:
                 translated += 1
     
@@ -88,7 +91,8 @@ def calculate_stats(lang_code, en_strings, lang_data):
         'missing': len(missing_keys),
         'untranslated': untranslated,
         'completeness': completeness,
-        'missingKeys': missing_keys
+        'missingKeys': missing_keys,
+        'untranslatedKeys': untranslated_keys
     }
 
 def load_language_file(branch, lang_code):
