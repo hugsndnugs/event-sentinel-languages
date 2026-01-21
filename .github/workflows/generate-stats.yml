@@ -6,15 +6,13 @@ on:
       - main
       - develop
     paths:
-      - '*.json'
-      - 'check_english.py'
-      - 'generate_stats.py'
-  pull_request:
-    branches:
-      - main
-      - develop
-    paths:
-      - '*.json'
+      - 'en.json'
+      - 'de.json'
+      - 'es.json'
+      - 'fr.json'
+      - 'ja.json'
+      - 'ko.json'
+      - 'pt.json'
       - 'check_english.py'
       - 'generate_stats.py'
   workflow_dispatch:
@@ -24,7 +22,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
     
     steps:
       - name: Checkout repository
@@ -50,19 +47,13 @@ jobs:
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
       
-      - name: Create Pull Request
-        if: steps.verify-changed-files.outputs.changed == 'true'
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Update translation statistics [skip ci]"
-          title: "Update translation statistics"
-          body: |
-            This PR was automatically created to update translation statistics.
-            
-            The statistics were generated using the Python functions from `check_english.py` to ensure consistency with validation scripts.
-          branch: update-translation-stats
-          delete-branch: true
-          labels: |
-            automated
-            translation
+      - name: Commit and push changes
+        if: steps.verify-changed-files.outputs.changed == 'true' && github.event_name != 'workflow_dispatch'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add translation_stats.json
+          git commit -m "Update translation statistics
+
+          [skip ci]" || exit 0
+          git push
