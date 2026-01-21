@@ -30,3 +30,6 @@ jobs:
       
       - name: Check string lengths
         run: python3 check_lengths.py
+      
+      - name: Report complete translation files
+        run: python3 check_complete.py
