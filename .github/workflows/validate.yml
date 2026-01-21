@@ -33,3 +33,105 @@ jobs:
       
       - name: Report complete translation files
         run: python3 check_complete.py
+      
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          path: main-branch
+          ref: main
+      
+      - name: Checkout develop branch
+        uses: actions/checkout@v4
+        with:
+          path: develop-branch
+          ref: develop
+      
+      - name: Compare branch completeness
+        run: python3 check_complete_compare.py main-branch develop-branch
+      
+      - name: Create issues for complete translations
+        if: github.event_name == 'push'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Read completeness results
+            let results;
+            try {
+              const resultsPath = path.join(process.cwd(), 'completeness_results.json');
+              results = JSON.parse(fs.readFileSync(resultsPath, 'utf8'));
+            } catch (error) {
+              console.log('No completeness results file found, skipping issue creation');
+              return;
+            }
+            
+            const readyToMove = results.ready_to_move || [];
+            
+            if (readyToMove.length === 0) {
+              console.log('No languages ready to move to main');
+              return;
+            }
+            
+            const languageNames = {
+              'de': 'German',
+              'es': 'Spanish',
+              'fr': 'French',
+              'ja': 'Japanese',
+              'ko': 'Korean',
+              'pt': 'Portuguese'
+            };
+            
+            // Check for existing issues and create new ones
+            for (const langCode of readyToMove) {
+              const langName = languageNames[langCode] || langCode.toUpperCase();
+              const issueTitle = `Move ${langName} translation to main (100% complete)`;
+              
+              // Check if issue already exists
+              const { data: issues } = await github.rest.issues.listForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+                labels: 'translation-complete'
+              });
+              
+              const existingIssue = issues.find(issue => issue.title === issueTitle);
+              
+              if (existingIssue) {
+                console.log(`Issue already exists for ${langCode}: #${existingIssue.number}`);
+                continue;
+              }
+              
+              // Create new issue
+              const commitUrl = context.payload.head_commit?.url || 
+                context.payload.repository?.html_url + '/commit/' + context.sha;
+              const issueBody = '## Translation Complete: ' + langName + ' (' + langCode + ')\n\n' +
+                'The ' + langName + ' translation file (`' + langCode + '.json`) has reached 100% completion on the `develop` branch and is ready to be moved to `main`.\n\n' +
+                '### Details\n' +
+                '- **Language**: ' + langName + ' (' + langCode + ')\n' +
+                '- **Status**: 100% complete - all keys translated\n' +
+                '- **Branch**: `develop`\n' +
+                '- **Ready for**: Merge to `main`\n\n' +
+                '### Next Steps\n' +
+                '1. Review the translation file on the `develop` branch\n' +
+                '2. Create a PR to merge `' + langCode + '.json` from `develop` to `main`\n' +
+                '3. Once merged, this issue can be closed\n\n' +
+                '### Commit Reference\n' +
+                'This issue was automatically created after commit: ' + context.sha + '\n' +
+                '[View commit](' + commitUrl + ')';
+              
+              try {
+                const { data: issue } = await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: issueTitle,
+                  body: issueBody,
+                  labels: ['translation-complete', 'ready-to-merge']
+                });
+                
+                console.log(`Created issue #${issue.number} for ${langCode}: ${issue.html_url}`);
+              } catch (error) {
+                console.error(`Failed to create issue for ${langCode}:`, error.message);
+              }
+            }

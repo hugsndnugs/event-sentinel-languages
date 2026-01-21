@@ -6,6 +6,19 @@ This repository contains the language files used by the [Event Sentinel](https:/
 
 Event Sentinel supports multiple languages to make the bot accessible to Discord communities worldwide. This repository manages all translation files in JSON format, making it easy for contributors to add new languages or improve existing translations.
 
+## Branch Strategy
+
+This repository uses a two-branch strategy to manage translation completeness:
+
+- **`main` branch**: Contains **complete** language translations only. All translation keys from `en.json` must be fully translated and verified.
+- **`develop` branch**: Contains **incomplete** language translations. This includes work-in-progress translations, partially translated files, and translations that need review or verification.
+
+When submitting pull requests:
+- Target `develop` if your translation is incomplete or needs review
+- Target `main` only if your translation is 100% complete and verified
+
+For detailed information about the branch strategy and how to choose the right branch, see [CONTRIBUTING.md](CONTRIBUTING.md#branch-strategy).
+
 ## Supported Languages
 
 The following languages are currently supported:

@@ -1,0 +1,75 @@
+name: Generate Translation Statistics
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'en.json'
+      - 'de.json'
+      - 'es.json'
+      - 'fr.json'
+      - 'ja.json'
+      - 'ko.json'
+      - 'pt.json'
+      - 'check_english.py'
+      - 'generate_stats.py'
+  workflow_dispatch:
+
+jobs:
+  generate-stats:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Checkout develop branch
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+          path: develop
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Checkout current branch for output
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      
+      - name: Generate translation statistics
+        run: python3 generate_stats.py
+      
+      - name: Check for changes
+        id: verify-changed-files
+        run: |
+          if [ -n "$(git status --porcelain translation_stats.json)" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Commit and push changes
+        if: steps.verify-changed-files.outputs.changed == 'true' && github.event_name != 'workflow_dispatch'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add translation_stats.json
+          git commit -m "Update translation statistics
+
+          [skip ci]" || exit 0
+          git push

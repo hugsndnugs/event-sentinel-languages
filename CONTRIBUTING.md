@@ -7,6 +7,7 @@ Thank you for your interest in contributing to Event Sentinel's translations! Th
 - [Code of Conduct](#code-of-conduct)
 - [How Can I Contribute?](#how-can-i-contribute)
 - [Translation Workflow](#translation-workflow)
+- [Branch Strategy](#branch-strategy)
 - [Translation Guidelines](#translation-guidelines)
 - [JSON File Structure](#json-file-structure)
 - [Quality Standards](#quality-standards)
@@ -142,6 +143,46 @@ git push origin translate/your-language-code
 3. Select your branch
 4. Fill out the pull request template (if available)
 5. Submit the pull request
+
+## Branch Strategy
+
+This project uses a two-branch strategy to manage translation completeness:
+
+- **`main` branch**: Contains **complete** language translations only. All translation keys from `en.json` must be fully translated and verified.
+- **`develop` branch**: Contains **incomplete** language translations. This includes work-in-progress translations, partially translated files, and translations that need review or verification.
+
+### `main` Branch
+
+The `main` branch is reserved for:
+- **Complete translations**: All translation keys from `en.json` must be translated
+- **Verified translations**: Translations that have been reviewed and tested
+- **Production-ready content**: Only translations ready for use in the Event Sentinel bot
+
+Only complete, verified translations should be merged to `main`. Maintainers will review and promote translations from `develop` to `main` once they meet the quality standards and are fully complete.
+
+### `develop` Branch
+
+The `develop` branch is used for:
+- **Partially translated languages**: Translations that are in progress but not yet complete
+- **Unverified translations**: Translations that haven't been reviewed or tested yet
+- **Work-in-progress contributions**: Any translation work that needs community review or verification
+
+When submitting a pull request for incomplete or unverified translations, target the `develop` branch. This allows contributors to share their progress and receive feedback before the translation is considered complete.
+
+### How to Choose the Right Branch
+
+When creating your pull request:
+- **Target `develop`** if your translation is:
+  - Not yet complete (missing some keys)
+  - Needs review or verification
+  - A work-in-progress update
+  
+- **Target `main`** if your translation is:
+  - 100% complete (all keys translated)
+  - Reviewed and verified
+  - Ready for production use
+
+If you're unsure which branch to target, default to `develop`. Maintainers can help determine if your translation is ready for `main` during the review process.
 
 ## Translation Guidelines
 

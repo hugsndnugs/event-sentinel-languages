@@ -6,6 +6,19 @@ This document provides guidelines for translators working on Event Sentinel bot 
 
 All language files follow the same JSON structure as `en.json`. The English file (`en.json`) serves as the base template and reference.
 
+## Branch Strategy
+
+This repository uses a two-branch strategy to manage translation completeness:
+
+- **`main` branch**: Contains **complete** language translations only. All translation keys from `en.json` must be fully translated and verified.
+- **`develop` branch**: Contains **incomplete** language translations. This includes work-in-progress translations, partially translated files, and translations that need review or verification.
+
+When submitting pull requests:
+- Target `develop` if your translation is incomplete or needs review
+- Target `main` only if your translation is 100% complete and verified
+
+For detailed information about the branch strategy, see [CONTRIBUTING.md](CONTRIBUTING.md#branch-strategy).
+
 ## Translation Keys
 
 Translation keys use dot notation to organize content hierarchically:
