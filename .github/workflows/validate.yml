@@ -106,25 +106,20 @@ jobs:
               // Create new issue
               const commitUrl = context.payload.head_commit?.url || 
                 context.payload.repository?.html_url + '/commit/' + context.sha;
-              const issueBody = `## Translation Complete: ${langName} (${langCode})
-
-The ${langName} translation file (\`${langCode}.json\`) has reached 100% completion on the \`develop\` branch and is ready to be moved to \`main\`.
-
-### Details
-- **Language**: ${langName} (${langCode})
-- **Status**: 100% complete - all keys translated
-- **Branch**: \`develop\`
-- **Ready for**: Merge to \`main\`
-
-### Next Steps
-1. Review the translation file on the \`develop\` branch
-2. Create a PR to merge \`${langCode}.json\` from \`develop\` to \`main\`
-3. Once merged, this issue can be closed
-
-### Commit Reference
-This issue was automatically created after commit: ${context.sha}
-[View commit](${commitUrl})
-              `;
+              const issueBody = '## Translation Complete: ' + langName + ' (' + langCode + ')\n\n' +
+                'The ' + langName + ' translation file (`' + langCode + '.json`) has reached 100% completion on the `develop` branch and is ready to be moved to `main`.\n\n' +
+                '### Details\n' +
+                '- **Language**: ' + langName + ' (' + langCode + ')\n' +
+                '- **Status**: 100% complete - all keys translated\n' +
+                '- **Branch**: `develop`\n' +
+                '- **Ready for**: Merge to `main`\n\n' +
+                '### Next Steps\n' +
+                '1. Review the translation file on the `develop` branch\n' +
+                '2. Create a PR to merge `' + langCode + '.json` from `develop` to `main`\n' +
+                '3. Once merged, this issue can be closed\n\n' +
+                '### Commit Reference\n' +
+                'This issue was automatically created after commit: ' + context.sha + '\n' +
+                '[View commit](' + commitUrl + ')';
               
               try {
                 const { data: issue } = await github.rest.issues.create({
