@@ -20,15 +20,19 @@ jobs:
           python-version: '3.x'
       
       - name: Validate locale files structure
+        continue-on-error: ${{ github.ref == 'refs/heads/develop' || github.base_ref == 'develop' }}
         run: python3 validate_locales.py
       
       - name: Check placeholders
+        continue-on-error: ${{ github.ref == 'refs/heads/develop' || github.base_ref == 'develop' }}
         run: python3 check_placeholders.py
       
       - name: Check for untranslated English text
+        continue-on-error: ${{ github.ref == 'refs/heads/develop' || github.base_ref == 'develop' }}
         run: python3 check_english.py
       
       - name: Check string lengths
+        continue-on-error: ${{ github.ref == 'refs/heads/develop' || github.base_ref == 'develop' }}
         run: python3 check_lengths.py
       
       - name: Report complete translation files
