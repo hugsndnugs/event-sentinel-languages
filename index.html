@@ -658,7 +658,8 @@
         }
 
         async function loadLanguages() {
-            const languageFiles = ['en', 'de', 'es', 'fr', 'ja', 'ko', 'pt'];
+            // Default fallback list if translation_stats.json is unavailable
+            const defaultLanguageFiles = ['en', 'de', 'es', 'fr', 'ja', 'ko', 'pt'];
             const repoBase = 'https://raw.githubusercontent.com/hugsndnugs/event-sentinel-languages';
             
             try {
@@ -674,6 +675,12 @@
                 } catch (error) {
                     console.warn('Error loading translation_stats.json:', error);
                 }
+
+                // Determine which language files to load based on translation_stats.json
+                // Use the keys from translationStats if available, otherwise fall back to default list
+                const languageFiles = (translationStats && Object.keys(translationStats).length > 0) 
+                    ? Object.keys(translationStats) 
+                    : defaultLanguageFiles;
 
                 for (const lang of languageFiles) {
                     let mainData = null;
